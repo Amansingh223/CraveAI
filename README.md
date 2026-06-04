@@ -44,8 +44,6 @@ Create a `.env` file in the root folder and drop your keys in there:
 GROQ_API_KEY=your_groq_api_key_here
 UNSPLASH_ACCESS_KEY=your_unsplash_key_here
 ```
-*(You can get these for free at [console.groq.com](https://console.groq.com/) and [unsplash.com/developers](https://unsplash.com/developers))*
-
 **3. Fire it up:**
 If you're on Windows, just double click the `run.bat` file! It will automatically boot up both the FastAPI backend and the Streamlit frontend. 
 
