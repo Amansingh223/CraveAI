@@ -1,30 +1,26 @@
 import sys
 import os
 from pathlib import Path
-
-# ── Resolve project root reliably for Streamlit ──
-# Streamlit may not resolve __file__ correctly, so we walk up 
-# from the current working directory (which is always the project root
-# when launched via `streamlit run app/main.py` from the project dir).
-_PROJECT_ROOT = str(Path.cwd())
-if _PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, _PROJECT_ROOT)
+import requests
 
 import streamlit as st
 from dotenv import load_dotenv
 
-# Load local environment variables if present
+_PROJECT_ROOT = str(Path.cwd())
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
 load_dotenv(os.path.join(_PROJECT_ROOT, ".env"))
 
-# Import the core logic
-from src.llm.engine import generate_recipes as llm_generate_recipes
-from src.utils.images import get_food_image
+# ── API Config ──
+# Read API URL from env, or default to local FastAPI server
+API_URL = os.getenv("API_URL", "http://localhost:8000/api/generate")
 
 # ── Page Config ──
 st.set_page_config(page_title="Crave AI Chef", page_icon="🍳", layout="centered")
 
 st.title("🍳 Crave AI Recipe Generator")
-st.write("Generate customized recipes based on what you have in your kitchen. Powered by Llama 3 & Unsplash.")
+st.write("Generate customized recipes based on what you have in your kitchen. Powered by Llama 3 via FastAPI.")
 
 # ── Recipe Generation Form ──
 with st.form("recipe_form"):
@@ -51,14 +47,21 @@ if submitted:
     else:
         with st.spinner("Chef Crave is brainstorming recipes for you..."):
             try:
-                raw_recipes = llm_generate_recipes(
-                    ingredients=ingredients,
-                    diet=diet if diet != "None" else "",
-                    cuisine=cuisine if cuisine != "Any" else "",
-                    time=time if time != "Any" else "",
-                    difficulty=difficulty if difficulty != "Any" else "",
-                    special=special
-                )
+                # Prepare payload for FastAPI
+                payload = {
+                    "ingredients": ingredients,
+                    "diet": diet,
+                    "cuisine": cuisine,
+                    "time": time,
+                    "difficulty": difficulty,
+                    "special": special
+                }
+                
+                # Make HTTP POST request to FastAPI backend
+                response = requests.post(API_URL, json=payload, timeout=30)
+                response.raise_for_status()
+                
+                raw_recipes = response.json()
                 
                 if raw_recipes:
                     st.success("Recipes generated successfully!")
@@ -71,8 +74,8 @@ if submitted:
                         st.header(name)
                         st.write(f"*{desc}*")
                         
-                        # Unsplash image
-                        img_url = get_food_image(name)
+                        # Image URL is now provided directly by the API response
+                        img_url = r.get("image_url")
                         if img_url:
                             st.image(img_url, width="stretch")
                             
@@ -97,6 +100,7 @@ if submitted:
                             
                 else:
                     st.error("Failed to generate recipes. Please try again.")
+            except requests.exceptions.ConnectionError:
+                st.error("❌ Cannot connect to FastAPI backend. Is it running on http://localhost:8000 ?")
             except Exception as e:
                 st.error(f"An error occurred: {str(e)}")
-                st.write("Hint: Make sure your GROQ_API_KEY is set correctly in Streamlit Secrets.")
