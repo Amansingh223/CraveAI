@@ -71,6 +71,41 @@ async def api_generate_recipes(request: RecipeRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+class FeedbackRequest(BaseModel):
+    recipe_name: str
+    rating: int
+    comment: Optional[str] = ""
+
+@app.post("/api/feedback")
+async def submit_feedback(feedback: FeedbackRequest):
+    import json
+    from datetime import datetime
+    
+    # Ensure data directory exists
+    data_dir = Path(__file__).parent.parent.parent / "data"
+    data_dir.mkdir(exist_ok=True)
+    feedback_file = data_dir / "feedback.json"
+    
+    entry = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "recipe_name": feedback.recipe_name,
+        "rating": feedback.rating,
+        "comment": feedback.comment
+    }
+    
+    # Read existing or create new list
+    feedbacks = []
+    if feedback_file.exists():
+        try:
+            feedbacks = json.loads(feedback_file.read_text())
+        except:
+            pass
+            
+    feedbacks.append(entry)
+    feedback_file.write_text(json.dumps(feedbacks, indent=4))
+    
+    return {"message": "Feedback received successfully!"}
+
 @app.get("/")
 def health_check():
     return {"status": "ok", "message": "CraveAI API is running"}

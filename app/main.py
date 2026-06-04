@@ -97,6 +97,24 @@ if submitted:
                                 
                         if r.get("tip"):
                             st.info(f"**Chef's Tip:** {r.get('tip')}")
+                        
+                        # ── Feedback Form ──
+                        with st.expander(f"Rate {name} ⭐"):
+                            f_rating = st.slider("Rating (1-5)", 1, 5, 5, key=f"rate_{name}")
+                            f_comment = st.text_input("Comment (optional)", key=f"com_{name}")
+                            if st.button("Submit Feedback", key=f"btn_{name}"):
+                                try:
+                                    fb_payload = {
+                                        "recipe_name": name,
+                                        "rating": f_rating,
+                                        "comment": f_comment
+                                    }
+                                    fb_url = API_URL.replace("/generate", "/feedback")
+                                    fb_res = requests.post(fb_url, json=fb_payload, timeout=5)
+                                    fb_res.raise_for_status()
+                                    st.toast(f"Thank you for rating {name}!")
+                                except Exception as e:
+                                    st.error("Could not submit feedback at this time.")
                             
                 else:
                     st.error("Failed to generate recipes. Please try again.")
