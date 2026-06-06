@@ -1,6 +1,6 @@
-# 🍳 CraveAI — Your Personal AI Chef
+# CraveAI — Your Personal AI Chef
 
-Hey there! 👋 Welcome to CraveAI. 
+Hey there! Welcome to CraveAI. 
 
 I built this project to solve that daily problem of staring at the fridge and thinking: *"What do I cook with this?"* It's a full-stack AI recipe generator that takes whatever ingredients you have, asks for your preferences (like time, cuisine, and diet), and spits out custom recipes complete with real food photos. 
 
@@ -8,7 +8,7 @@ I recently migrated the architecture to a split backend (FastAPI) and frontend (
 
 ---
 
-## 🌍 Live Demos
+##  Live Demos
 
 Yep, it's live! You can play around with it here:
 
@@ -17,7 +17,7 @@ Yep, it's live! You can play around with it here:
 
 ---
 
-## 🛠️ How It Works (The Tech Stack)
+##  How It Works (The Tech Stack)
 
 - **UI:** Streamlit (because it's fast and looks great)
 - **Backend:** FastAPI (handling all the heavy lifting)
@@ -27,7 +27,7 @@ Yep, it's live! You can play around with it here:
 
 ---
 
-## 💻 Running It Locally
+##  Running It Locally
 
 Want to run it on your own machine? It's pretty straightforward.
 
@@ -53,7 +53,7 @@ If you prefer doing it manually:
 
 ---
 
-## 🗂️ Project Structure
+##  Project Structure
 
 Here's how I organized the code (trying to keep it clean and modular):
 
@@ -75,4 +75,4 @@ CraveAI/
 ```
 
 ---
-*Feel free to fork this, submit PRs, or just use it to figure out what to make for dinner tonight!* 🍕
+*Feel free to fork this, submit PRs, or just use it to figure out what to make for dinner tonight!* 
